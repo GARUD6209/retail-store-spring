@@ -1,7 +1,9 @@
 package com.garud.retail.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -9,6 +11,8 @@ import java.util.Objects;
 @Data
 @Entity
 @Table(name = "users")
+@AllArgsConstructor
+@NoArgsConstructor
 public class SignupEntity {
 
 
@@ -57,6 +61,7 @@ public class SignupEntity {
 
 
 
+
     // toString Method
     @Override
     public String toString() {
@@ -91,4 +96,6 @@ public class SignupEntity {
     public int hashCode() {
         return Objects.hash(id, username, password, cityId, name, mobileNumber, email, gstNumber, address, createDatetime, updateDatetime, otp, otpCreationTime, enabled);
     }
+
+
 }
