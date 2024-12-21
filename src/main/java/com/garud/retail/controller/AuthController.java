@@ -4,6 +4,7 @@ import com.garud.retail.jwt.JwtUtils;
 import com.garud.retail.pojo.LoginRequest;
 import com.garud.retail.pojo.LoginResponse;
 import com.garud.retail.pojo.SignupRequest;
+import com.garud.retail.pojo.SignupResponse;
 import com.garud.retail.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Username already exists");
         }
 
-        String save = authService.save(signupRequest);
+        SignupResponse save = authService.save(signupRequest);
         // Create a new user
 
 
