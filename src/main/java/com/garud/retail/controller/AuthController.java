@@ -1,21 +1,15 @@
 package com.garud.retail.controller;
 
-
-import com.garud.retail.constant.ErrorCodeEnum;
-import com.garud.retail.exception.RetailException;
 import com.garud.retail.jwt.JwtUtils;
 import com.garud.retail.pojo.LoginRequest;
 import com.garud.retail.pojo.LoginResponse;
 import com.garud.retail.pojo.SignupRequest;
-import com.garud.retail.pojo.SignupResponse;
 import com.garud.retail.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -55,20 +49,15 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<String> signup(@RequestBody SignupRequest signupRequest) {
         // Check if user already exists
         if (((JdbcUserDetailsManager) userDetailsService).userExists(signupRequest.getUsername())) {
 
-            throw new RetailException(ErrorCodeEnum.USER_ALDEADY_EXIST.getErrorCode(),
-                    ErrorCodeEnum.USER_ALDEADY_EXIST.getErrorMessage(),
-                    HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body("Username already exists");
         }
 
-        SignupResponse save = authService.save(signupRequest);
+        String save = authService.save(signupRequest);
         // Create a new user
 
 
@@ -80,7 +69,7 @@ public class AuthController {
             ((JdbcUserDetailsManager) userDetailsService).updateUser(user);
             log.info("user created with username : " + signupRequest.getUsername());
         }
-        return ResponseEntity.ok(save);
+        return ResponseEntity.ok("User registered successfully" + "from authService : " + save);
     }
 
     @PostMapping("/signin")
@@ -94,7 +83,11 @@ public class AuthController {
                             loginRequest.getPassword()));
             log.info("got to login try block");
         } catch (AuthenticationException exception) {
-            throw new BadCredentialsException(ErrorCodeEnum.USER_NOT_FOUND.getErrorMessage());
+            Map<String, Object> map = new HashMap<>();
+            map.put("message", "Bad credentials");
+            map.put("status", false);
+            log.error("got to login catch block : " + exception.getMessage());
+            return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -114,6 +107,4 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
-
-
 }

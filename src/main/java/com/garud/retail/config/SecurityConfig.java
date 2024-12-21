@@ -23,7 +23,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.sql.DataSource;
@@ -41,9 +40,6 @@ public class SecurityConfig {
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
-    @Autowired
-    private AccessDeniedHandler accessDeniedHandler;
-
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
@@ -52,7 +48,7 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests.requestMatchers("/h2-console/**","/auth/**",
+                authorizeRequests.requestMatchers("/h2-console/**","/auth/**","/helloapi/**",
                                 "swagger-ui/**", "swagger-ui**", "/v3/api-docs/**", "/v3/api-docs**").permitAll()
                         .anyRequest().authenticated());
         http.sessionManagement(
@@ -60,10 +56,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS)
         );
-        http.exceptionHandling(
-exception -> exception.authenticationEntryPoint(unauthorizedHandler)
-        .accessDeniedHandler(accessDeniedHandler)
-        );
+        http.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));
         //http.httpBasic(withDefaults());
         http.headers(headers -> headers
                 .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin
@@ -91,6 +84,7 @@ exception -> exception.authenticationEntryPoint(unauthorizedHandler)
                     .roles("USER")
                     .build();
             UserDetails admin = User.withUsername("admin")
+                    //.password(passwordEncoder().encode("adminPass"))
                     .password(passwordEncoder().encode("adminPass"))
                     .roles("ADMIN")
                     .build();

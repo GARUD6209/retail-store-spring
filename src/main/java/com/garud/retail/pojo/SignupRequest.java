@@ -19,6 +19,4 @@ public class SignupRequest {
     private String address;
     private String otp;
     private boolean enabled;
-
-
 }
