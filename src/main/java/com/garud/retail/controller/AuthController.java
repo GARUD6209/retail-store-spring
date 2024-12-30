@@ -1,5 +1,6 @@
 package com.garud.retail.controller;
 
+import com.garud.retail.constant.ErrorCodeEnum;
 import com.garud.retail.jwt.JwtUtils;
 import com.garud.retail.pojo.LoginRequest;
 import com.garud.retail.pojo.LoginResponse;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -84,11 +86,7 @@ public class AuthController {
                             loginRequest.getPassword()));
             log.info("got to login try block");
         } catch (AuthenticationException exception) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("message", "Bad credentials");
-            map.put("status", false);
-            log.error("got to login catch block : " + exception.getMessage());
-            return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
+            throw new BadCredentialsException(ErrorCodeEnum.USER_NOT_FOUND.getErrorMessage());
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -102,10 +100,10 @@ public class AuthController {
                 .collect(Collectors.toList());
 
         LoginResponse response = new LoginResponse(
-                      jwtToken,
-                      userDetails.getUsername(),
-                      roles );
+                jwtToken,
+                userDetails.getUsername(),
+                roles );
 
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<LoginResponse>(response,HttpStatus.OK);
     }
 }

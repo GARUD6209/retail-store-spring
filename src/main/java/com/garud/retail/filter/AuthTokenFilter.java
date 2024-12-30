@@ -1,5 +1,6 @@
-package com.garud.retail.jwt;
+package com.garud.retail.filter;
 
+import com.garud.retail.jwt.JwtUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -25,7 +26,7 @@ import java.io.IOException;
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
-    private  JwtUtils jwtUtils;
+    private JwtUtils jwtUtils;
 
     @Autowired
     private  UserDetailsService userDetailsService;

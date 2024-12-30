@@ -28,16 +28,16 @@ public class UserService {
     @Autowired
     private MailUtil mailUtil;
 
-    public UserResponse getUser(Long id){
+    public UserResponse getUser(String username){
 
-        return modelMapper.map(userRepository.findById(id),UserResponse.class);
+        return modelMapper.map(userRepository.findByUsername(username),UserResponse.class);
 
     }
 
-    public UserResponse updateUser(Long id, UserResponse userResponse) {
+    public UserResponse updateUser( UserResponse userResponse, String username) {
 
-        SignupEntity existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        SignupEntity existingUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
 
         // Update only the fields present in UserResponse
         if (userResponse.getUsername() != null) {

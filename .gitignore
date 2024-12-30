@@ -1,13 +1,12 @@
-HELP.md
+# Ignore application.properties globally
+application.properties
+application-docker.properties
+
+### Maven ###
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
-
-### properties ###
-.application.properties
-.application-docker.properties
 
 ### STS ###
 .apt_generated
